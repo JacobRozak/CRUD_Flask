@@ -56,6 +56,14 @@ def index():
     else:
         return jsonify(Event.query.all())
 
+@app.route('/event/<int:id>')
+def event(id):
+    data = Event.query.all()
+    for element in data:
+        if element.id == int(id):
+           return jsonify(element)
+    
+
 @app.route('/delete/<int:id>')
 def delete(id):
     task_to_delete = Event.query.get_or_404(id)
