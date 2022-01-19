@@ -10,10 +10,9 @@ app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
-#dataclass decorateor for easy turning 
+#creating one-to-man relationship between tables
 @dataclass
 class Event(db.Model):
-    #these are for @dataclass object!!
     id: int
     name: str
     date_created: str
@@ -35,8 +34,6 @@ class Ticket(db.Model):
     uuid = db.Column(db.String(120), unique=True, nullable=False)
     reedeemed = db.Column(db.Boolean, unique=False, default=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('event.id'))
-
-
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -90,7 +87,6 @@ def delete(id):
 def deleteTicket(id):
     uuid = request.args.get('uuid')
     ticket_to_delete = Event.query.get_or_404(id)
-    #return jsonify(ticket_to_delete.tickets)
     for i in ticket_to_delete.tickets:
         try:
             if i.uuid == uuid:
