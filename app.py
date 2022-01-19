@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
-#creating one-to-man relationship between tables
+#creating one-to-many relationship between tables
 @dataclass
 class Event(db.Model):
     id: int
@@ -20,7 +20,7 @@ class Event(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    date_created = db.Column(db.String(200), nullable=False)
     tickets = db.relationship('Ticket', backref='event')
     
 @dataclass
@@ -39,7 +39,7 @@ class Ticket(db.Model):
 def index():
     if request.method == 'POST':
         data = request.get_json()
-        new_event = Event(name=data['name'])
+        new_event = Event(name=data['name'], date_created=data['date'])
         try:
             db.session.add(new_event)
             for i in range(1,data['amount']+1):
@@ -104,6 +104,7 @@ def update(id):
     
     try:
         task.name = data['name']
+        task.date_created = data['date']
         for i in range(1, int(data['amount']) + 1):
             db.session.add(Ticket(uuid=str(uuid.uuid4()), event=task))
         db.session.commit()
