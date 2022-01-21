@@ -52,6 +52,10 @@ def index():
     else:
         return jsonify(Event.query.all())
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 @app.route('/event/<int:id>')
 def event(id):
     data = Event.query.all()
@@ -120,5 +124,5 @@ def reset(id):
     db.session.commit()
     return jsonify(task.tickets)
     
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
